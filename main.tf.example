@@ -45,10 +45,14 @@ provider "volterra" {
   timeout      = "30s"
 }
 
-module "efp_pan_east_west_simple" {
+output "cert_file" {
+  value = var.f5xc_api_p12_file
+}
+
+/*module "efp_pan_east_west_simple" {
   source                        = "./modules/f5xc/enhanced-fw-policy"
   f5xc_namespace                = var.f5_xc_namespace
-  f5xc_enhanced_fw_policy_name  = format("%s-%s-%s", var.project_prefix, "pan-e-w-simple", var.project_suffix)
+  f5xc_enhanced_fw_policy_name  = format("%s-%s-%s", var.project_prefix, "efp-test", var.project_suffix)
   f5xc_enhanced_fw_policy_rules = [
     {
       metadata = {
@@ -66,4 +70,4 @@ module "efp_pan_east_west_simple" {
   providers = {
     volterra = volterra.default
   }
-}
+}*/
