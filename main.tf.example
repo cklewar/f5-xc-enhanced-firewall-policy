@@ -1,43 +1,3 @@
-variable "project_prefix" {
-  type        = string
-  description = "prefix string put in front of string"
-  default     = "f5xc"
-}
-
-variable "project_suffix" {
-  type        = string
-  description = "prefix string put at the end of string"
-  default     = "01"
-}
-
-variable "f5xc_source_prefix_list" {
-  type = list(string)
-  default = ["192.168.0.0/24", "192.168.1.0/24"]
-}
-
-variable "f5xc_destination_prefix_list" {
-  type = list(string)
-  default = ["172.16.24.0/24", "172.16.25.0/24"]
-}
-
-variable "f5xc_nfv_name" {
-  type = string
-  default = "my-nvf-name"
-}
-
-variable "f5_xc_namespace" {
-  type = string
-  default = "system"
-}
-
-variable "f5xc_api_url" {
-  type = string
-}
-
-variable "f5xc_api_p12_file" {
-  type = string
-}
-
 provider "volterra" {
   api_p12_file = var.f5xc_api_p12_file
   url          = var.f5xc_api_url
@@ -45,9 +5,77 @@ provider "volterra" {
   timeout      = "30s"
 }
 
+module "tgw" {
+  source                         = "./modules/f5xc/site/aws/tgw"
+  f5xc_tenant                    = var.f5xc_tenant
+  f5xc_api_url                   = var.f5xc_api_url
+  f5xc_aws_cred                  = var.f5xc_aws_cred
+  f5xc_api_token                 = var.f5xc_api_token
+  f5xc_namespace                 = var.f5xc_namespace
+  f5xc_aws_region                = var.f5xc_aws_region
+  f5xc_aws_tgw_name              = local.f5xc_aws_tgw_name
+  f5xc_aws_tgw_owner             = var.f5xc_aws_tgw_owner
+  f5xc_aws_tgw_primary_ipv4      = "192.168.168.0/21"
+  f5xc_aws_tgw_no_worker_nodes   = true
+  f5xc_aws_default_ce_sw_version = true
+  f5xc_aws_default_ce_os_version = true
+  f5xc_aws_tgw_az_nodes          = {
+    node0 : {
+      f5xc_aws_tgw_workload_subnet = "192.168.168.0/26", f5xc_aws_tgw_inside_subnet = "192.168.168.64/26",
+      f5xc_aws_tgw_outside_subnet  = "192.168.168.128/26", f5xc_aws_tgw_az_name = var.f5xc_aws_az_name
+    }
+  }
+  custom_tags    = local.custom_tags_bigip
+  ssh_public_key = file(var.ssh_public_key_file)
+  providers      = {
+    aws      = aws.default
+    volterra = volterra.default
+  }
+}
+
+module "apply_timeout_workaround" {
+  source         = "./modules/utils/timeout"
+  depend_on      = module.tgw.f5xc_aws_tgw
+  create_timeout = "120s"
+  delete_timeout = "180s"
+}
+
+module "nfv" {
+  depends_on                   = [module.apply_timeout_workaround, module.tgw.f5xc_aws_tgw]
+  source                       = "./modules/f5xc/nfv/aws"
+  f5xc_tenant                  = var.f5xc_tenant
+  f5xc_api_url                 = var.f5xc_api_url
+  f5xc_nfv_type                = var.f5xc_nfv_type_f5_big_ip_aws_service
+  f5xc_nfv_name                = format("%s-%s-%s", var.project_prefix, var.nfv_name, var.project_suffix)
+  f5xc_api_token               = var.f5xc_api_token
+  f5xc_namespace               = var.f5xc_namespace
+  f5xc_nfv_domain_suffix       = var.nfv_domain_suffix
+  f5xc_nfv_admin_password      = var.nfv_admin_password
+  f5xc_nfv_admin_username      = var.nfv_admin_username
+  f5xc_nfv_aws_tgw_site_params = {
+    name      = module.tgw.f5xc_aws_tgw["site_name"]
+    tenant    = var.f5xc_tenant
+    namespace = module.tgw.f5xc_aws_tgw["namespace"]
+  }
+  f5xc_aws_nfv_nodes = {
+    "${var.project_prefix}-${var.nfv_name}-node1-${var.project_suffix}" = {
+      aws_az_name          = format("%s%s", var.f5xc_aws_region, "a")
+      automatic_prefix     = true
+      reserved_mgmt_subnet = false
+    }
+  }
+  f5xc_https_mgmt_advertise_on_internet_default_vip = true
+  ssh_public_key                                    = file(var.ssh_public_key_file)
+  custom_tags                                       = local.custom_tags_bigip
+  providers                                         = {
+    aws      = aws.default
+    volterra = volterra.default
+  }
+}
+
 module "efp_pan_east_west_simple" {
   source                        = "./modules/f5xc/enhanced-fw-policy"
-  f5xc_namespace                = var.f5_xc_namespace
+  f5xc_namespace                = var.f5xc_namespace
   f5xc_enhanced_fw_policy_name  = format("%s-%s-%s", var.project_prefix, "efp-test", var.project_suffix)
   f5xc_enhanced_fw_policy_rules = [
     {
@@ -56,7 +84,7 @@ module "efp_pan_east_west_simple" {
       }
       insert_service = {
         nfv_service = {
-          name = var.f5xc_nfv_name
+          name = module.nfv.nfv["name"]
         }
       }
       source_prefix_list      = var.f5xc_source_prefix_list
