@@ -27,6 +27,7 @@ variable "f5xc_nfv_name" {
 
 variable "f5_xc_namespace" {
   type = string
+  default = "system"
 }
 
 variable "f5xc_api_url" {
