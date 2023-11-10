@@ -1,0 +1,53 @@
+variable "project_prefix" {
+  type        = string
+  description = "prefix string put in front of string"
+  default     = "f5xc"
+}
+
+variable "project_suffix" {
+  type        = string
+  description = "prefix string put at the end of string"
+  default     = "01"
+}
+
+variable "f5xc_source_prefix_list" {
+  type = list(string)
+  default = ["192.168.0.0/24", "192.168.1.0/24"]
+}
+
+variable "f5xc_destination_prefix_list" {
+  type = list(string)
+  default = ["172.16.24.0/24", "172.16.25.0/24"]
+}
+
+variable "f5xc_nfv_name" {
+  type = string
+  default = "my-nvf-name"
+}
+
+variable "f5_xc_namespace" {
+  type = string
+}
+
+module "efp_pan_east_west_simple" {
+  source                        = "./modules/f5xc/enhanced-fw-policy"
+  f5xc_namespace                = var.f5_xc_namespace
+  f5xc_enhanced_fw_policy_name  = format("%s-%s-%s", var.project_prefix, "pan-e-w-simple", var.project_suffix)
+  f5xc_enhanced_fw_policy_rules = [
+    {
+      metadata = {
+        name = "vpc-a-subnet-private-to-vpc-b-subnet-private"
+      }
+      insert_service = {
+        nfv_service = {
+          name = var.f5xc_nfv_name
+        }
+      }
+      source_prefix_list      = var.f5xc_source_prefix_list
+      destination_prefix_list = var.f5xc_destination_prefix_list
+    }
+  ]
+  providers = {
+    volterra = volterra.default
+  }
+}
