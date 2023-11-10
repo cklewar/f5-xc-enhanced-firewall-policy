@@ -29,6 +29,21 @@ variable "f5_xc_namespace" {
   type = string
 }
 
+variable "f5xc_api_url" {
+  type = string
+}
+
+variable "f5xc_api_p12_file" {
+  type = string
+}
+
+provider "volterra" {
+  api_p12_file = var.f5xc_api_p12_file
+  url          = var.f5xc_api_url
+  alias        = "default"
+  timeout      = "30s"
+}
+
 module "efp_pan_east_west_simple" {
   source                        = "./modules/f5xc/enhanced-fw-policy"
   f5xc_namespace                = var.f5_xc_namespace
