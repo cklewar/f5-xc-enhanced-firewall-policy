@@ -100,23 +100,6 @@ variable "f5xc_nfv_type_f5_big_ip_aws_service" {
   default = "f5_big_ip_aws_service"
 }
 
-variable "f5xc_nfv_type_palo_alto_fw_service" {
-  type    = string
-  default = "palo_alto_fw_service"
-}
-
-variable "f5xc_pan_panorama_server" {
-  type = string
-}
-
-variable "f5xc_pan_panorama_device_group_name" {
-  type = string
-}
-
-variable "f5xc_pan_panorama_server_authorization_key" {
-  type = string
-}
-
 variable "f5xc_source_prefix_list" {
   type = list(string)
   default = ["192.168.0.0/24", "192.168.1.0/24"]
