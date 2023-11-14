@@ -11,10 +11,6 @@ terraform {
   }
 
   required_providers {
-    restapi = {
-      source  = "Mastercard/restapi"
-      version = ">= 1.18.2"
-    }
     tfe = {
       source  = "hashicorp/tfe"
       version = ">= 0.50.0"
