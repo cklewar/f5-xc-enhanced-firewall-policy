@@ -11,7 +11,7 @@ provider "volterra" {
 }
 
 locals {
-  aws_availability_zone = format("%s%s", var.5xc_aws_region, var.f5xc_aws_availability_zone)
+  aws_availability_zone = format("%s%s", var.f5xc_aws_region, var.f5xc_aws_availability_zone)
   custom_tags           = {
     Owner        = var.owner
     f5xc-tenant  = var.f5xc_tenant
