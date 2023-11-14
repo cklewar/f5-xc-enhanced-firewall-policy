@@ -7,7 +7,11 @@ variable "project_prefix" {
 variable "project_suffix" {
   type        = string
   description = "prefix string put at the end of string"
-  default     = "40"
+  default     = "1"
+}
+
+variable "root_path" {
+  type = string
 }
 
 variable "f5xc_aws_tgw_owner" {
@@ -15,7 +19,7 @@ variable "f5xc_aws_tgw_owner" {
   default = "c.klewar@ves.io"
 }
 
-variable "f5xc_api_p12_file" {
+variable "f5xc_api_p12_file_absolute" {
   type = string
 }
 
@@ -101,15 +105,54 @@ variable "f5xc_nfv_type_f5_big_ip_aws_service" {
 }
 
 variable "f5xc_source_prefix_list" {
-  type = list(string)
+  type    = list(string)
   default = ["192.168.0.0/24", "192.168.1.0/24"]
 }
 
 variable "f5xc_destination_prefix_list" {
-  type = list(string)
+  type    = list(string)
   default = ["172.16.24.0/24", "172.16.25.0/24"]
 }
 
-variable "ssh_public_key_file" {
+variable "ssh_public_key_file_absolute" {
   type = string
+}
+
+variable "f5xc_aws_availability_zone" {
+  type    = string
+  default = "a"
+}
+
+variable "f5xc_aws_vpc_owner" {
+  type    = string
+  default = "c.klewar@ves.io"
+}
+
+variable "owner" {
+  type    = string
+  default = "c.klewar@f5.com"
+}
+
+variable "aws_vpc_workload_a_name" {
+  type        = string
+  description = "Name for workload vpc a"
+  default     = "vpc-workload-a"
+}
+
+variable "aws_vpc_workload_b_name" {
+  type        = string
+  description = "Name for workload vpc b"
+  default     = "vpc-workload-b"
+}
+
+variable "aws_vpc_workload_a_cidr_block" {
+  type        = string
+  description = "vpc cidr block for workload vpc a"
+  default     = "172.16.28.0/22"
+}
+
+variable "aws_vpc_workload_b_cidr_block" {
+  type        = string
+  description = "vpc cidr block for workload vpc b"
+  default     = "172.16.32.0/22"
 }

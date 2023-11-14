@@ -4,14 +4,51 @@ provider "aws" {
 }
 
 provider "volterra" {
-  api_p12_file = var.f5xc_api_p12_file
+  api_p12_file = format("%s/%s", var.root_path, var.f5xc_api_p12_file_absolute)
   url          = var.f5xc_api_url
   alias        = "default"
   timeout      = "30s"
 }
 
+locals {
+  aws_availability_zone = format("%s%s", var.f5xc_aws_region, var.f5xc_aws_availability_zone)
+  custom_tags           = {
+    Owner        = var.owner
+    f5xc-tenant  = var.f5xc_tenant
+    f5xc-feature = "f5xc-aws-vpc-site"
+  }
+}
+
+module "workload_vpc_a" {
+  source             = "../modules/aws/vpc"
+  aws_owner          = var.owner
+  aws_region         = var.f5xc_aws_region
+  aws_az_name        = format("%s%s", var.f5xc_aws_region, "a")
+  aws_vpc_name       = format("%s-%s-%s", var.project_prefix, var.aws_vpc_workload_a_name, var.project_suffix)
+  aws_vpc_cidr_block = var.aws_vpc_workload_a_cidr_block
+  create_igw         = true
+  custom_tags        = local.custom_tags
+  providers          = {
+    aws = aws.default
+  }
+}
+
+module "workload_vpc_b" {
+  source             = "../modules/aws/vpc"
+  aws_owner          = var.owner
+  aws_region         = var.f5xc_aws_region
+  aws_az_name        = format("%s%s", var.f5xc_aws_region, "a")
+  aws_vpc_name       = format("%s-%s-%s", var.project_prefix, var.aws_vpc_workload_b_name, var.project_suffix)
+  aws_vpc_cidr_block = var.aws_vpc_workload_b_cidr_block
+  create_igw         = true
+  custom_tags        = local.custom_tags
+  providers          = {
+    aws = aws.default
+  }
+}
+
 module "tgw" {
-  source                         = "./modules/f5xc/site/aws/tgw"
+  source                         = "../modules/f5xc/site/aws/tgw"
   f5xc_tenant                    = var.f5xc_tenant
   f5xc_api_url                   = var.f5xc_api_url
   f5xc_aws_cred                  = var.f5xc_aws_cred
@@ -21,6 +58,7 @@ module "tgw" {
   f5xc_aws_tgw_name              = local.f5xc_aws_tgw_name
   f5xc_aws_tgw_owner             = var.f5xc_aws_tgw_owner
   f5xc_aws_tgw_primary_ipv4      = "192.168.168.0/21"
+  f5xc_aws_vpc_attachment_ids    = [module.workload_vpc_a.aws_vpc["id"], module.workload_vpc_b.aws_vpc["id"]]
   f5xc_aws_tgw_no_worker_nodes   = true
   f5xc_aws_default_ce_sw_version = true
   f5xc_aws_default_ce_os_version = true
@@ -30,8 +68,8 @@ module "tgw" {
       f5xc_aws_tgw_outside_subnet  = "192.168.168.128/26", f5xc_aws_tgw_az_name = var.f5xc_aws_az_name
     }
   }
-  custom_tags    = local.custom_tags_bigip
-  ssh_public_key = file(var.ssh_public_key_file)
+  custom_tags    = local.custom_tags
+  ssh_public_key = file(format("%s/%s", var.root_path, var.ssh_public_key_file_absolute))
   providers      = {
     aws      = aws.default
     volterra = volterra.default
@@ -39,15 +77,35 @@ module "tgw" {
 }
 
 module "apply_timeout_workaround" {
-  source         = "./modules/utils/timeout"
+  source         = "../modules/utils/timeout"
   depend_on      = module.tgw.f5xc_aws_tgw
   create_timeout = "120s"
   delete_timeout = "180s"
 }
 
+module "efp_pan_east_west_simple_vpc" {
+  source                        = "../modules/f5xc/enhanced-fw-policy"
+  f5xc_namespace                = var.f5xc_namespace
+  f5xc_enhanced_fw_policy_name  = format("%s-%s-%s", var.project_prefix, "efp-test", var.project_suffix)
+  f5xc_enhanced_fw_policy_rules = [
+    {
+      metadata = {
+        name = "vpc-a-subnet-to-vpc-b-subnet"
+      }
+      allow                   = true
+      source_aws_vpc_ids      = [module.workload_vpc_a.aws_vpc["id"]]
+      destination_aws_vpc_ids = [module.workload_vpc_b.aws_vpc["id"]]
+    }
+  ]
+  providers = {
+    volterra = volterra.default
+  }
+}
+
+/*
 module "nfv" {
   depends_on                   = [module.apply_timeout_workaround, module.tgw.f5xc_aws_tgw]
-  source                       = "./modules/f5xc/nfv/aws"
+  source                       = "../modules/f5xc/nfv/aws"
   f5xc_tenant                  = var.f5xc_tenant
   f5xc_api_url                 = var.f5xc_api_url
   f5xc_nfv_type                = var.f5xc_nfv_type_f5_big_ip_aws_service
@@ -76,16 +134,16 @@ module "nfv" {
     aws      = aws.default
     volterra = volterra.default
   }
-}
+}*/
 
-module "efp_pan_east_west_simple" {
+/*module "efp_pan_east_west_simple_nfv" {
   source                        = "./modules/f5xc/enhanced-fw-policy"
   f5xc_namespace                = var.f5xc_namespace
   f5xc_enhanced_fw_policy_name  = format("%s-%s-%s", var.project_prefix, "efp-test", var.project_suffix)
   f5xc_enhanced_fw_policy_rules = [
     {
       metadata = {
-        name = "vpc-a-subnet-private-to-vpc-b-subnet-private"
+        name = "vpc-a-subnet-nfv-to-vpc-b-subnet-nfv"
       }
       insert_service = {
         nfv_service = {
@@ -99,4 +157,4 @@ module "efp_pan_east_west_simple" {
   providers = {
     volterra = volterra.default
   }
-}
+}*/
