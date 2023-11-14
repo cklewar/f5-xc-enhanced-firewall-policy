@@ -156,3 +156,15 @@ variable "aws_vpc_workload_b_cidr_block" {
   description = "vpc cidr block for workload vpc b"
   default     = "172.16.32.0/22"
 }
+
+variable "aws_subnet_workload_a_private_cidr" {
+  type        = string
+  description = "Workload A private net subnet"
+  default     = "172.16.29.0/24"
+}
+
+variable "aws_subnet_workload_b_private_cidr" {
+  type        = string
+  description = "Workload B private net subnet"
+  default     = "172.16.33.0/24"
+}

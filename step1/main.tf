@@ -11,7 +11,7 @@ provider "volterra" {
 }
 
 locals {
-  aws_availability_zone = format("%s%s", var.f5xc_aws_region, var.f5xc_aws_availability_zone)
+  aws_availability_zone = format("%s%s", var.5xc_aws_region, var.f5xc_aws_availability_zone)
   custom_tags           = {
     Owner        = var.owner
     f5xc-tenant  = var.f5xc_tenant
@@ -26,7 +26,7 @@ module "workload_vpc_a" {
   aws_az_name        = format("%s%s", var.f5xc_aws_region, "a")
   aws_vpc_name       = format("%s-%s-%s", var.project_prefix, var.aws_vpc_workload_a_name, var.project_suffix)
   aws_vpc_cidr_block = var.aws_vpc_workload_a_cidr_block
-  create_igw         = true
+  create_igw         = false
   custom_tags        = local.custom_tags
   providers          = {
     aws = aws.default
@@ -40,14 +40,51 @@ module "workload_vpc_b" {
   aws_az_name        = format("%s%s", var.f5xc_aws_region, "a")
   aws_vpc_name       = format("%s-%s-%s", var.project_prefix, var.aws_vpc_workload_b_name, var.project_suffix)
   aws_vpc_cidr_block = var.aws_vpc_workload_b_cidr_block
-  create_igw         = true
+  create_igw         = false
   custom_tags        = local.custom_tags
   providers          = {
     aws = aws.default
   }
 }
 
+module "workload_subnets_a" {
+  source          = "../modules/aws/subnet"
+  aws_vpc_id      = module.workload_vpc_a.aws_vpc["id"]
+  aws_vpc_subnets = [
+    {
+      name                    = format("%s-%s-%s-private", var.project_suffix, var.aws_vpc_workload_a_name, var.project_suffix)
+      owner                   = var.owner
+      cidr_block              = var.aws_subnet_workload_a_private_cidr
+      custom_tags             = local.custom_tags
+      availability_zone       = format("%s%s", var.f5xc_aws_region, "a")
+      map_public_ip_on_launch = false
+    }
+  ]
+  providers = {
+    aws = aws.default
+  }
+}
+
+module "workload_subnets_b" {
+  source          = "../modules/aws/subnet"
+  aws_vpc_id      = module.workload_vpc_b.aws_vpc["id"]
+  aws_vpc_subnets = [
+    {
+      name                    = format("%s-%s-%s-private", var.project_suffix, var.aws_vpc_workload_b_name, var.project_suffix)
+      owner                   = var.owner
+      cidr_block              = var.aws_subnet_workload_b_private_cidr
+      custom_tags             = local.custom_tags
+      availability_zone       = format("%s%s", var.f5xc_aws_region, "a")
+      map_public_ip_on_launch = false
+    }
+  ]
+  providers = {
+    aws = aws.default
+  }
+}
+
 module "tgw" {
+  depends_on                     = []
   source                         = "../modules/f5xc/site/aws/tgw"
   f5xc_tenant                    = var.f5xc_tenant
   f5xc_api_url                   = var.f5xc_api_url
