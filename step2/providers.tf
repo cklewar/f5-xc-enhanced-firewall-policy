@@ -1,11 +1,11 @@
 provider "restapi" {
-  uri     = var.data.api_url
+  uri     = var.f5xc_api_url
   debug   = true
   headers = {
     Accept                      = "application/json"
     Content-Type                = "application/json"
     Authorization               = format("APIToken %s", var.f5xc_api_token)
-    x-volterra-apigw-tenant     = var.data.tenant
+    x-volterra-apigw-tenant     = data.tfe_outputs.step1.values.tenant
     Access-Control-Allow-Origin = "*"
   }
   create_method         = "PUT"

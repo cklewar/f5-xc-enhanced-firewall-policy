@@ -3,23 +3,20 @@ locals {
   payload     = jsonencode(
     {
       spec = {
-        aws_parameters = {
-          enable_internet_vip = {},
-        },
-        vpc_security = {
+        aws_parameters = {},
+        vpc_security   = {
           active_enhanced_firewall_policies = {
             enhanced_firewall_policies = [
               for name in data.tfe_outputs.step1.values.efp_name_list :
               {
                 name      = name
-                tenant    = var.data.tenant
+                tenant    = data.tfe_outputs.step1.values.tenant
                 namespace = var.namespace,
               }
             ]
           }
         }
-        "vn_config" : {
-        },
+        "vn_config" : {},
         "vpc_attachments" : {
           "vpc_list" : [
             {

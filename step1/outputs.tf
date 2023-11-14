@@ -2,6 +2,10 @@ output "site_name" {
   value = module.tgw.f5xc_aws_tgw["site_name"]
 }
 
+output "tenant" {
+  value = var.f5xc_tenant
+}
+
 output "workload_vpc_a_id" {
   value = module.workload_vpc_a.aws_vpc["id"]
 }
