@@ -13,3 +13,5 @@ provider "restapi" {
   destroy_method        = "PUT"
   create_returns_object = true
 }
+
+provider "tfe" {}

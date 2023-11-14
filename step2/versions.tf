@@ -15,6 +15,10 @@ terraform {
       source  = "Mastercard/restapi"
       version = ">= 1.18.2"
     }
+    tfe = {
+      source  = "hashicorp/tfe"
+      version = ">= 0.50.0"
+    }
 
     local = ">= 2.2.3"
     null  = ">= 3.1.1"
