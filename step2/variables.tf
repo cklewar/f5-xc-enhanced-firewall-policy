@@ -21,7 +21,3 @@ variable "aws_region" {
   description = "AWS region name"
   default     = "us-west-2"
 }
-
-variable "root_path" {
-  type = string
-}
