@@ -103,6 +103,8 @@ jobs:
           TF_VAR_f5xc_tenant: ${{ secrets.F5XC_TENANT }}
           TF_VAR_f5xc_api_token: ${{ secrets.F5XC_API_TOKEN }}
           TF_VAR_f5xc_api_credential_password: ${{ secrets.F5XC_API_CREDENTIAL_PASSWORD }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           TF_VAR_nfv_admin_password: ${{ secrets.NFV_ADMIN_PASSWORD }}
           TF_VAR_nfv_admin_username: ${{ secrets.NFV_ADMIN_USERNAME }}
           TF_VAR_ssh_private_key_file: ${{ secrets.SSH_PRIVATE_KEY_FILE }}
@@ -175,6 +177,8 @@ jobs:
           TF_VAR_f5xc_tenant: ${{ secrets.F5XC_TENANT }}
           TF_VAR_f5xc_api_token: ${{ secrets.F5XC_API_TOKEN }}
           TF_VAR_f5xc_api_credential_password: ${{ secrets.F5XC_API_CREDENTIAL_PASSWORD }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           TF_VAR_nfv_admin_password: ${{ secrets.NFV_ADMIN_PASSWORD }}
           TF_VAR_nfv_admin_username: ${{ secrets.NFV_ADMIN_USERNAME }}
           TF_VAR_ssh_private_key_file: ${{ secrets.SSH_PRIVATE_KEY_FILE }}
@@ -199,6 +203,8 @@ jobs:
           TF_VAR_f5xc_tenant: ${{ secrets.F5XC_TENANT }}
           TF_VAR_f5xc_api_token: ${{ secrets.F5XC_API_TOKEN }}
           TF_VAR_f5xc_api_credential_password: ${{ secrets.F5XC_API_CREDENTIAL_PASSWORD }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           TF_VAR_nfv_admin_password: ${{ secrets.NFV_ADMIN_PASSWORD }}
           TF_VAR_nfv_admin_username: ${{ secrets.NFV_ADMIN_USERNAME }}
           TF_VAR_ssh_private_key_file: ${{ secrets.SSH_PRIVATE_KEY_FILE }}
@@ -264,6 +270,8 @@ jobs:
           TF_VAR_f5xc_tenant: ${{ secrets.F5XC_TENANT }}
           TF_VAR_f5xc_api_token: ${{ secrets.F5XC_API_TOKEN }}
           TF_VAR_f5xc_api_credential_password: ${{ secrets.F5XC_API_CREDENTIAL_PASSWORD }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           TF_VAR_nfv_admin_password: ${{ secrets.NFV_ADMIN_PASSWORD }}
           TF_VAR_nfv_admin_username: ${{ secrets.NFV_ADMIN_USERNAME }}
           TF_VAR_ssh_private_key_file: ${{ secrets.SSH_PRIVATE_KEY_FILE }}
@@ -290,6 +298,8 @@ jobs:
           TF_VAR_f5xc_tenant: ${{ secrets.F5XC_TENANT }}
           TF_VAR_f5xc_api_token: ${{ secrets.F5XC_API_TOKEN }}
           TF_VAR_f5xc_api_credential_password: ${{ secrets.F5XC_API_CREDENTIAL_PASSWORD }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           TF_VAR_nfv_admin_password: ${{ secrets.NFV_ADMIN_PASSWORD }}
           TF_VAR_nfv_admin_username: ${{ secrets.NFV_ADMIN_USERNAME }}
           TF_VAR_ssh_private_key_file: ${{ secrets.SSH_PRIVATE_KEY_FILE }}
@@ -355,6 +365,8 @@ jobs:
           TF_VAR_f5xc_tenant: ${{ secrets.F5XC_TENANT }}
           TF_VAR_f5xc_api_token: ${{ secrets.F5XC_API_TOKEN }}
           TF_VAR_f5xc_api_credential_password: ${{ secrets.F5XC_API_CREDENTIAL_PASSWORD }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           TF_VAR_nfv_admin_password: ${{ secrets.NFV_ADMIN_PASSWORD }}
           TF_VAR_nfv_admin_username: ${{ secrets.NFV_ADMIN_USERNAME }}
           TF_VAR_ssh_private_key_file: ${{ secrets.SSH_PRIVATE_KEY_FILE }}
